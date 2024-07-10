@@ -1,0 +1,45 @@
+doctype html
+html
+  head
+    title File Upload
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js")
+    style.
+      .dropzone {
+        border: 2px dashed #007bff;
+        padding: 20px;
+        text-align: center;
+      }
+  body
+    h1 Upload Files
+    if error
+      p(style="color: red") #{error}
+    if success
+      p(style="color: green") #{success}
+    form(id="uploadForm" action="/upload" method="post" enctype="multipart/form-data")
+      .dropzone
+        input(type="file" name="files" id="fileInput" multiple)
+        label(for="fileInput") Drop files here or click to upload
+      br
+      button(type="submit") Upload
+    script.
+      $(document).ready(function() {
+        $('.dropzone').on('dragover', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          $(this).addClass('dragging');
+        });
+
+        $('.dropzone').on('dragleave', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          $(this).removeClass('dragging');
+        });
+
+        $('.dropzone').on('drop', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          $(this).removeClass('dragging');
+          let files = e.originalEvent.dataTransfer.files;
+          $('#fileInput')[0].files = files;
+        });
+      });
