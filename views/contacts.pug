@@ -1,0 +1,36 @@
+extends layout
+
+block content
+  .container
+    .text-info-wrapper
+        .text-info
+            h3 Contact Us
+            p Address: 123 Main Street
+            p Phone: +123456789
+            p Email: info@example.com
+    .map
+        a.dg-widget-link(href="http://2gis.ru/kirov/profiles/70000001034040244,70000001046394952/center/49.6047821128741,58.59863963758588/zoom/13?utm_medium=widget-source&utm_campaign=firmsonmap&utm_source=bigMap") Посмотреть на карте Кирова
+        script(src="https://widgets.2gis.com/js/DGWidgetLoader.js", charset="utf-8")
+        script(charset="utf-8").
+            new DGWidgetLoader({
+                "width":640,
+                "height":600,
+                "borderColor":"#a3a3a3",
+                "pos":{
+                    "lat":58.59863963758588,
+                    "lon":49.6047821128741,
+                    "zoom":13
+                },
+                "opt":{
+                    "city":"kirov"
+                },
+                "org":[
+                    {"id":"70000001034040244"},
+                    {"id":"70000001046394952"}
+                ]
+            });
+        noscript(style="color:#c00;font-size:16px;font-weight:bold;") Виджет карты использует JavaScript. Включите его в настройках вашего браузера.
+        
+
+
+    
