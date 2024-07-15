@@ -1,72 +1,97 @@
-let {products} = require('../database/mock')
+const client = require('../database/postgres')
 
-const getProducts = (req, res) => {
-    res.status(200).json({ success: true, data: products })
+const getProducts = async (req, res) => {
+    try {
+      const result = await client.query('SELECT * FROM products');
+      res.status(200).json(result.rows);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server error');
+    }
 }
-const getSingleProduct = (req,res)=> {
-    const { id } = req.params
-    res.status(200).json({success:true,product:products.find((product) => product.id === Number(id))})
+const getSingleProduct = async (req, res) => {
+    const { id } = req.params;
+    try {
+      const result = await client.query('SELECT * FROM products WHERE id = $1', [id]);
+      if (result.rows.length === 0) {
+        res.status(404).send('Product not found');
+      } else {
+        res.status(200).json(result.rows[0]);
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server error');
+    }
 }
   
-const createProduct = (req, res) => {
-    const { name } = req.body
-    if (!name) {
-        return res
-        .status(400)
-        .json({ success: false, msg: 'please provide name value' })
-    }
-    res.status(201).send({ success: true, product: name })
-}
+const createProduct = async (req, res) => {
+    const { category_id, name, short_description, long_description, color, price } = req.body;
+    console.log('Received body:', req.body);
+    console.log('Received files:', req.files);
+    try {
+        const result = await client.query(
+            'INSERT INTO products (category_id, name, short_description, long_description, color, price) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [category_id, name, short_description, long_description, color, price]
+        );
 
-  
-const createProductPostman = (req, res) => {
-    const { name } = req.body
-    if (!name) {
-        return res
-        .status(400)
-        .json({ success: false, msg: 'please provide name value' })
-    }
-    res.status(201).send({ success: true, products: [...products, name] })
-}
+        const productId = result.rows[0].id;
+        const imageUrls = req.files.map(file => `/uploads/${file.filename}`);
 
-const updateProduct = (req, res) => {
-    const { id } = req.params
-    const { name } = req.body
-
-    const product = products.find((product) => product.id === Number(id))
-
-    if (!product) {
-        return res
-        .status(404)
-        .json({ success: false, msg: `no product with id ${id}` })
-    }
-    const newProducts = products.map((product) => {
-        if (product.id === Number(id)) {
-        product.name = name
+        for (const url of imageUrls) {
+            await client.query('INSERT INTO product_images (product_id, image_url) VALUES ($1, $2)', [productId, url]);
         }
-        return product
-    })
-    res.status(200).json({ success: true, data: newProducts })
+
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 }
 
-const deleteProduct = (req, res) => {
-    const product = products.find((product) => product.id === Number(req.params.id))
-    if (!product) {
-        return res
-        .status(404)
-        .json({ success: false, msg: `no product with id ${req.params.id}` })
+
+const updateProduct = async (req, res) => {
+    const { id } = req.params;
+    const { category_id, name, short_description, long_description, color, price } = req.body;
+    console.log('Received body:', req.body);
+    console.log('Received files:', req.files);
+    try {
+        const result = await client.query(
+            'UPDATE products SET category_id = $1, name = $2, short_description = $3, long_description = $4, color = $5, price = $6 WHERE id = $7 RETURNING *',
+            [category_id, name, short_description, long_description, color, price, id]
+        );
+
+        await client.query('DELETE FROM product_images WHERE product_id = $1', [id]);
+        const imageUrls = req.files.map(file => `/uploads/${file.filename}`);
+
+        for (const url of imageUrls) {
+            await client.query('INSERT INTO product_images (product_id, image_url) VALUES ($1, $2)', [id, url]);
+        }
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-    const newProducts = products.filter(
-        (product) => product.id !== Number(req.params.id)
-    )
-    return res.status(200).json({ success: true, data: newProducts })
+}
+
+const deleteProduct = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await client.query('DELETE FROM products WHERE id = $1 RETURNING *', [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        res.status(200).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 }
 
 module.exports = {
     getProducts,
     getSingleProduct,
     createProduct,
-    createProductPostman,
     updateProduct,
     deleteProduct,
 }

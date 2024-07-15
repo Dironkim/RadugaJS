@@ -14,6 +14,7 @@ const requireAuth = (req, res, next) => {
   if (req.session && req.session.authenticated) {
     return next()
   } else {
+    req.session.redirectTo = req.originalUrl;
     res.redirect('auth/login')
   }
 }
@@ -26,13 +27,15 @@ const loginForm = (req, res) => {
 }
 
 // Route handler for login form submission
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { user, pass } = req.body
   if (user === username) {
     bcrypt.compare(pass, hashedPassword, (err, result) => {
       if (result) {
         req.session.authenticated = true;
-        return res.redirect('/upload')
+        const redirectTo = req.session.redirectTo || '/'; // Получаем URL из сессии или устанавливаем значение по умолчанию
+        delete req.session.redirectTo; // Удаляем redirectTo из сессии после использования
+        return res.redirect(redirectTo);
       } else {
         req.session.error = 'Invalid password.'
         return res.redirect('/auth/login')

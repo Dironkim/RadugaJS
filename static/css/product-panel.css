@@ -1,0 +1,50 @@
+.container {
+  display: flex;
+  justify-content: flex-start;
+
+}
+
+.product-list {
+  flex: 1;
+  margin-right: 20px;
+  max-width: 700px;
+  margin-left: 50px;
+}
+
+.product-form {
+  flex: 0 0 500px;
+  margin-right: 150px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+
+#product-form {
+  margin-top: 20px;
+}
+
+#product-form label {
+  display: block;
+  margin-top: 10px;
+}
+
+#product-form input, #product-form textarea {
+  width: 100%;
+  padding: 5px;
+  margin-top: 5px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}

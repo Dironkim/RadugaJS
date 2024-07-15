@@ -1,0 +1,50 @@
+extends layout
+
+block content
+  h1 Products Management
+  button(onclick="showForm('new')") New Product
+
+  .container
+    .product-list
+      table
+        thead
+          tr
+            th Image
+            th Name
+            th Actions
+        tbody
+          each product in products
+            tr(data-id=product.id)
+              td: img(src=product.images[0], width="100")
+              td= product.name
+              td
+                button(onclick=`showForm('edit', ${product.id})`) Edit
+                button(onclick=`deleteProduct(${product.id})`) Delete
+    .product-form#product-form(style="display:none")  
+      h2#form-title New Product
+      form(id="productForm", enctype="multipart/form-data")
+        input(type="hidden", name="id", id="productId")
+        .form-group
+          label(for="name") Name:
+          input(type="text", name="name", id="productName")
+        .form-group
+          label(for="category_id") Category ID:
+          input(type="number", name="category_id", id="productCategory")
+        .form-group
+          label(for="short_description") Short Description:
+          input(type="text", name="short_description", id="productShortDescription")
+        .form-group
+          label(for="long_description") Long Description:
+          textarea(name="long_description", id="productLongDescription")
+        .form-group
+          label(for="color") Color:
+          input(type="text", name="color", id="productColor")
+        .form-group
+          label(for="price") Price:
+          input(type="number", step="0.01", name="price", id="productPrice")
+        .form-group
+          label(for="images") Images:
+          input(type="file", name="images", id="productImages", multiple)
+        button(type="submit") Save
+      button(onclick="hideForm()") Cancel
+  script(src="/js/scripts.js")

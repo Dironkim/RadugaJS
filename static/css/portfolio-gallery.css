@@ -1,0 +1,99 @@
+.portfolio-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 столбца по умолчанию */
+    gap: 10px;
+    margin: 220px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.portfolio-gallery .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+    box-sizing: border-box;
+    color: white;
+    z-index: 1;
+}
+
+.portfolio-gallery .overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 50%, rgba(0, 0, 0, 0.7));
+    pointer-events: none;
+    z-index: 0;
+}
+
+.portfolio-gallery .overlay .title {
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 1;
+}
+
+.portfolio-gallery .overlay .description {
+    font-size: 14px;
+    z-index: 1;
+}
+  
+.portfolio-gallery .grid-item {
+    position: relative;
+    overflow: hidden;
+    width: 100%; 
+    height: 200px; /* Фиксированная высота ячеек */
+    transition: transform 0.3s ease; /* Переход для плавного увеличения */
+    text-decoration: none; /* Убираем подчеркивание у ссылок */
+    color: inherit; /* Наследуем цвет */
+    border-radius: 20px;
+    border-width: 3px;
+    border-color: rgb(255, 255, 255);
+    border-style: groove;
+}
+.portfolio-gallery .grid-item:hover {
+    transform: scale(1.05); /* Увеличение ячейки при наведении */
+    z-index: 2;
+}
+
+.portfolio-gallery .grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Обрезка изображений по центру */
+    transition: transform 0.3s ease;
+}
+
+.portfolio-gallery .grid-item:hover img {
+    transform: scale(1.1); /* Увеличение изображения при наведении */
+}
+
+@media (max-width: 1000px) {
+    .portfolio-gallery {
+      grid-template-columns: repeat(3, 1fr); /* 3 столбца при средней ширине */
+      margin: 70px;
+      margin-top:20px;
+      margin-bottom: 20px;
+    }
+    .portfolio-gallery .grid-item {
+      height: 150px; /* Уменьшенная высота ячеек */
+    }
+  }
+  
+  /* Медиа-запрос для сильного уменьшения */
+  @media (max-width: 768px) {
+    .portfolio-gallery {
+      grid-template-columns: repeat(1, 1fr); /* 1 столбец при маленькой ширине */
+      margin: 120px;
+      margin-top:20px;
+      margin-bottom: 20px;
+    }
+    .portfolio-gallery .grid-item {
+      height: 300px; /* Увеличенная высота ячеек */
+    }
+  }

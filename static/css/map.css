@@ -1,0 +1,43 @@
+.container-contacts {
+    display: flex;
+    margin: 150px;
+    margin-top: 20px;
+    margin-bottom:20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.map {
+    flex: 1 1 65%;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+    height: 400px;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+}
+@media (max-width:1000px) {
+    .container-contacts {
+        margin: 70px;
+        margin-top: 20px;
+        margin-bottom:20px;
+    }
+}
+/* Медиа-запрос для адаптивного дизайна */
+@media (max-width: 840px) {
+    .container-contacts {
+        margin: 50px;
+        margin-top: 20px;
+        margin-bottom:20px;
+    }
+    .text-info, .map {
+        flex: 1 1 100%;
+        height: auto; /* Убираем фиксированную высоту в мобильном режиме */
+    }
+    .map {
+        height: 300px; /* Устанавливаем высоту контейнера для карты в мобильном режиме */
+    }
+}
