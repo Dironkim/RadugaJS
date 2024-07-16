@@ -4,11 +4,12 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const products = require('./routes/products')
 const panel = require('./routes/product-panel')
-const upload = require('./routes/upload')
+// const upload = require('./routes/upload')
 const auth = require('./routes/auth')
 const contacts = require('./routes/contacts')
 
 const {sessionMiddleware,requireAuth} = require('./controllers/authentication')
+
 
 // Чтобы получить req.body 
 app.use(bodyParser.json());
@@ -30,8 +31,8 @@ app.use('/contacts',contacts)
 // require login to access
 app.use('/products',requireAuth,products)
 app.use('/product-panel',requireAuth,panel)
-app.use('/upload',requireAuth,upload)
-
+// app.use('/upload',requireAuth,upload)
+//app.use('/products-db',require('./routes/checkDB'))
 
 app.get('/catalog', (req, res) => {
     res.render('catalog');

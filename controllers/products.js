@@ -1,47 +1,70 @@
-const client = require('../database/postgres')
+const {Product, Image, Tag} = require('../models/index')
 
 const getProducts = async (req, res) => {
     try {
-      const result = await client.query('SELECT * FROM products');
-      res.status(200).json(result.rows);
+        const products = await Product.findAll({
+            include: [
+                { model: Image, as: 'images' },
+                { model: Tag, as: 'tags' }
+            ]
+        });
+        res.status(200).json(products);
     } catch (err) {
-      console.error(err);
-      res.status(500).send('Server error');
+        console.error(err);
+        res.status(500).send('Server error');
     }
 }
 const getSingleProduct = async (req, res) => {
     const { id } = req.params;
     try {
-      const result = await client.query('SELECT * FROM products WHERE id = $1', [id]);
-      if (result.rows.length === 0) {
-        res.status(404).send('Product not found');
-      } else {
-        res.status(200).json(result.rows[0]);
-      }
+        const product = await Product.findByPk(id, {
+            include: [
+                { model: Image, as: 'images' },
+                { model: Tag, as: 'tags' }
+            ]
+        });
+        if (!product) {
+            res.status(404).send('Product not found');
+        } else {
+            res.status(200).json(product);
+        }
     } catch (err) {
-      console.error(err);
-      res.status(500).send('Server error');
+        console.error(err);
+        res.status(500).send('Server error');
     }
 }
   
 const createProduct = async (req, res) => {
-    const { category_id, name, short_description, long_description, color, price } = req.body;
+    const { category_id, name, short_description, long_description, color, price, tags } = req.body;
     console.log('Received body:', req.body);
     console.log('Received files:', req.files);
     try {
-        const result = await client.query(
-            'INSERT INTO products (category_id, name, short_description, long_description, color, price) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [category_id, name, short_description, long_description, color, price]
-        );
+        const product = await Product.create({
+            category_id,
+            name,
+            short_description,
+            long_description,
+            color,
+            price,
+        });
 
-        const productId = result.rows[0].id;
-        const imageUrls = req.files.map(file => `/uploads/${file.filename}`);
-
-        for (const url of imageUrls) {
-            await client.query('INSERT INTO product_images (product_id, image_url) VALUES ($1, $2)', [productId, url]);
+        if (req.files) {
+            const imagePromises = req.files.map(file =>
+                Image.create({ product_id: product.id, image_url: `/uploads/${file.filename}` })
+            );
+            await Promise.all(imagePromises);
         }
 
-        res.status(201).json(result.rows[0]);
+        if (tags && tags.length > 0) {
+            const tagInstances = await Tag.findAll({
+                where: {
+                    name: tags,
+                }
+            });
+            await product.setTags(tagInstances);
+        }
+
+        res.status(201).json(product);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -50,26 +73,41 @@ const createProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     const { id } = req.params;
-    const { category_id, name, short_description, long_description, color, price } = req.body;
+    const { category_id, name, short_description, long_description, color, price, tags } = req.body;
     console.log('Received body:', req.body);
     console.log('Received files:', req.files);
     try {
-        const result = await client.query(
-            'UPDATE products SET category_id = $1, name = $2, short_description = $3, long_description = $4, color = $5, price = $6 WHERE id = $7 RETURNING *',
-            [category_id, name, short_description, long_description, color, price, id]
-        );
-
-        await client.query('DELETE FROM product_images WHERE product_id = $1', [id]);
-        const imageUrls = req.files.map(file => `/uploads/${file.filename}`);
-
-        for (const url of imageUrls) {
-            await client.query('INSERT INTO product_images (product_id, image_url) VALUES ($1, $2)', [id, url]);
-        }
-
-        if (result.rows.length === 0) {
+        const product = await Product.findByPk(id);
+        if (!product) {
             return res.status(404).json({ error: 'Product not found' });
         }
-        res.json(result.rows[0]);
+
+        await product.update({
+            category_id,
+            name,
+            short_description,
+            long_description,
+            color,
+            price,
+        });
+
+        await Image.destroy({ where: { product_id: id } });
+        if (req.files) {
+            const imagePromises = req.files.map(file =>
+                Image.create({ product_id: product.id, image_url: `/uploads/${file.filename}` })
+            );
+            await Promise.all(imagePromises);
+        }
+        if (tags && tags.length > 0) {
+            const tagInstances = await Tag.findAll({
+                where: {
+                    name: tags,
+                }
+            });
+            await product.setTags(tagInstances);
+        }
+
+        res.json(product);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -78,11 +116,13 @@ const updateProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await client.query('DELETE FROM products WHERE id = $1 RETURNING *', [id]);
-        if (result.rows.length === 0) {
+        const product = await Product.findByPk(id);
+        if (!product) {
             return res.status(404).json({ error: 'Product not found' });
         }
-        res.status(200).json(result.rows[0]);
+
+        await product.destroy();
+        res.status(200).json(product);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
