@@ -1,6 +1,4 @@
 const db = require('../database/postgres')
-
-
 const Image = require('../models/Image')
 const Product = require('../models/Product')
 const Category = require('../models/Category')
@@ -32,7 +30,7 @@ Product.belongsToMany(Tag, { through: ProductTag, foreignKey: 'product_id' })
 Tag.belongsToMany(Product, { through: ProductTag, foreignKey: 'tag_id' })
 
 
-db.sync({force:true}).then(function () {
+db.sync({force:false}).then(function () {
     console.log("Database Configured");
 });
 module.exports = {Product, Category, ProductTag, Image, Tag}

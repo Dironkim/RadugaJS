@@ -45,6 +45,12 @@ block content
         .form-group
           label(for="images") Images:
           input(type="file", name="images", id="productImages", multiple)
+        .form-group
+          label(for="tags") Tags:
+          each tag in tags
+            .checkbox
+              input(type="checkbox", name="tags", value=tag.id, id=`tag-${tag.id}`)
+              label(for=`tag-${tag.id}`)= tag.name
         button(type="submit") Save
       button(onclick="hideForm()") Cancel
   script(src="/js/scripts.js")

@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const productColor = document.getElementById('productColor');
     const productPrice = document.getElementById('productPrice');
   
+    
+
     form.style.display = 'block';
     if (action === 'new') {
       formTitle.textContent = 'New Product';
@@ -45,6 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
       productLongDescription.value = '';
       productColor.value = '';
       productPrice.value = '';
+      document.querySelectorAll('input[name="tags"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
     } else if (action === 'edit' && id) {
       formTitle.textContent = 'Edit Product';
       fetch(`/products/${id}`)
@@ -57,6 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
           productLongDescription.value = product.long_description;
           productColor.value = product.color;
           productPrice.value = product.price;
+          document.querySelectorAll('input[name="tags"]').forEach(checkbox => {
+            checkbox.checked = product.tags.includes(parseInt(checkbox.value));
+          });
         });
     }
   }

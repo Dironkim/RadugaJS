@@ -1,8 +1,7 @@
 const { DataTypes } = require('sequelize')
 const db = require('../database/postgres')
-const Product = require('../models/Product')
 
-const Category = db.define('Category', {
+const Category = db.define('category', {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -11,8 +10,8 @@ const Category = db.define('Category', {
       type: DataTypes.TEXT,
     },
 }, {
-    tableName: 'categories',
     timestamps: true,
+    underscored: true
 })
   
 

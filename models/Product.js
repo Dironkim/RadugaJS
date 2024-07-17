@@ -1,10 +1,9 @@
 const {DataTypes} = require('sequelize')
 const db = require('../database/postgres')
-//const {Category} = require('./index.js')
 const Category = require('../models/Category')
 
 
-const Product = db.define('Product', {
+const Product = db.define('product', {
     name: {
         type: DataTypes.STRING,
         allowNull: false
@@ -31,14 +30,8 @@ const Product = db.define('Product', {
         type: DataTypes.DECIMAL(10, 2)
     }
 }, {
-    tableName: 'products',
     timestamps: true,
+    underscored: true
 })
-
-// Product.hasMany(Image, {
-//     foreignKey: 'product_id',
-//     as: 'images',
-//     onDelete: 'CASCADE',
-// })
 
 module.exports = Product

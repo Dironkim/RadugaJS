@@ -1,9 +1,8 @@
 const { DataTypes } = require('sequelize')
 const db = require('../database/postgres')
-// const {Product} = require('./index.js')
 const Product = require('../models/Product')
 
-const Image = db.define('Image', {
+const Image = db.define('image', {
   product_id: {
     type: DataTypes.INTEGER,
     references: {
@@ -17,8 +16,8 @@ const Image = db.define('Image', {
     allowNull: false,
   },
 }, {
-  tableName:'images',
   timestamps: true,
+  underscored: true
 })
 
 module.exports = Image

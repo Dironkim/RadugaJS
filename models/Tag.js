@@ -1,14 +1,14 @@
 const {DataTypes} = require('sequelize')
 const db = require('../database/postgres')
 
-const Tag = db.define('Tag', {
+const Tag = db.define('tag', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
     },
     }, {
-    tableName: 'tags',
     timestamps: true,
+    underscored: true
 })
 
 module.exports = Tag
