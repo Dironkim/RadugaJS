@@ -48,3 +48,13 @@ th, td {
 .form-group {
   margin-bottom: 15px;
 }
+
+.boxes {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.checkbox {
+  display: flex;
+  justify-content: flex-start;
+}

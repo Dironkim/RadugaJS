@@ -56,12 +56,8 @@ const createProduct = async (req, res) => {
         }
 
         if (tags && tags.length > 0) {
-            const tagInstances = await Tag.findAll({
-                where: {
-                    name: tags,
-                }
-            });
-            await product.setTags(tagInstances);
+            const tagIds = tags.map(tag => parseInt(tag));
+            await product.setTags(tagIds);
         }
 
         res.status(201).json(product);
@@ -98,13 +94,10 @@ const updateProduct = async (req, res) => {
             );
             await Promise.all(imagePromises);
         }
+        
         if (tags && tags.length > 0) {
-            const tagInstances = await Tag.findAll({
-                where: {
-                    name: tags,
-                }
-            });
-            await product.setTags(tagInstances);
+            const tagIds = tags.map(tag => parseInt(tag));
+            await product.setTags(tagIds);
         }
 
         res.json(product);

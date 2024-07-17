@@ -62,8 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
           productLongDescription.value = product.long_description;
           productColor.value = product.color;
           productPrice.value = product.price;
+          const tagIds = product.tags.map(tag => tag.id);
           document.querySelectorAll('input[name="tags"]').forEach(checkbox => {
-            checkbox.checked = product.tags.includes(parseInt(checkbox.value));
+            checkbox.checked = tagIds.includes(parseInt(checkbox.value));
           });
         });
     }
