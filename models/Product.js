@@ -2,7 +2,7 @@ const {DataTypes} = require('sequelize')
 const db = require('../database/postgres')
 const Category = require('../models/Category')
 
-
+// модель товара
 const Product = db.define('product', {
     name: {
         type: DataTypes.STRING,
@@ -15,7 +15,7 @@ const Product = db.define('product', {
           key: 'id',
         },
         allowNull: true, 
-        onDelete: 'SET NULL', 
+        onDelete: 'SET NULL', // при удалении категории это поле принимает значение NULL
     },
     short_description: {
         type: DataTypes.TEXT,
@@ -27,7 +27,7 @@ const Product = db.define('product', {
         type: DataTypes.STRING,
     },
     price: {
-        type: DataTypes.DECIMAL(10, 2)
+        type: DataTypes.DECIMAL(10, 2) // суммарно 10 знаков, из них 2 после запятой
     }
 }, {
     timestamps: true,

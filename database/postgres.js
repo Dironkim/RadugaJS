@@ -1,5 +1,6 @@
 const {Sequelize} = require('sequelize')
 const {dbUsername, dbPassword} = require('../static/credentials')
+// подключение к бд
 const db = new Sequelize('radugaDev',dbUsername,dbPassword,{
 		host: 'localhost',
 		dialect:'postgres',

@@ -3,6 +3,7 @@ const db = require('../database/postgres')
 const Tag = require('../models/Tag')
 const Product = require('../models/Product')
 
+// модель для связи m:n товары - теги
 const ProductTag = db.define('productTag', {
     product_id: {
       type: DataTypes.INTEGER,

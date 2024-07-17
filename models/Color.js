@@ -1,8 +1,8 @@
 const {DataTypes} = require('sequelize')
 const db = require('../database/postgres')
 
-// модель тегов
-const Tag = db.define('tag', {
+// модель цветов
+const Color = db.define('color', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -12,4 +12,4 @@ const Tag = db.define('tag', {
     underscored: true
 })
 
-module.exports = Tag
+module.exports = Color

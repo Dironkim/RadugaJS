@@ -1,15 +1,8 @@
 const express = require('express')
-const app = express()
 const path = require('path')
 const bodyParser = require('body-parser')
-const products = require('./routes/products')
-const panel = require('./routes/product-panel')
-// const upload = require('./routes/upload')
-const auth = require('./routes/auth')
-const contacts = require('./routes/contacts')
-
 const {sessionMiddleware,requireAuth} = require('./controllers/authentication')
-
+const app = express()
 
 // Чтобы получить req.body 
 app.use(bodyParser.json());
@@ -18,35 +11,29 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Чтобы после авторизации не нужно было повторно вводить данные - сессия
 app.use(sessionMiddleware)
 
-// Парсер JSON для API-запросов
-//app.use(express.json())
-
-// Serve static files from 'uploads' directory
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
-app.use(express.static('static'))
-
-// Routes
-app.use('/auth',auth)
-app.use('/contacts',contacts)
-// require login to access
-app.use('/products',requireAuth,products)
-app.use('/product-panel',requireAuth,panel)
-// app.use('/upload',requireAuth,upload)
-//app.use('/products-db',require('./routes/checkDB'))
-
-app.get('/catalog', (req, res) => {
-    res.render('catalog');
-  })
-
-
-app.get('/',(req,res)=>{
-    res.render('index')
-})
-
-// Set Pug as the template engine
+// Выбрать Pug, как движок для представлений и указать директорию, в которой представления хранятся
 app.set('view engine', 'pug')
 app.set('views', path.join(__dirname, '/views'))
 
+// для доступа к загруженным на сервер файлам
+app.use('/uploads', express.static(path.join(__dirname, '/uploads'))) //
+// статические ресурсы (в views) искать в папке /static
+app.use(express.static('static'))
+
+// отправляем в нужный маршрутизатор в routes
+app.use('/auth', require('./routes/auth'))
+app.use('/contacts', require('./routes/contacts'))
+// запросы по этим адресам будут требовать авторизацию
+app.use('/products', requireAuth, require('./routes/products'))
+app.use('/product-panel', requireAuth, require('./routes/product-panel'))
+
+// пока просто отобразить, без маршрутов и контроллеров
+app.get('/catalog', (req, res) => {
+    res.render('catalog');
+  })
+app.get('/',(req,res)=>{
+    res.render('index')
+})
 
 app.listen(5000, ()=>{
     console.log('Server is listening on port 5000...')

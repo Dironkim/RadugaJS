@@ -1,4 +1,4 @@
-const { Product, Image, Category, Tag } = require('../models/index');
+const { Product, Image, Category, Tag, Color } = require('../models/index');
 
 const renderPanel = async (req, res) => {
     try {
@@ -6,7 +6,8 @@ const renderPanel = async (req, res) => {
             include: [
                 { model: Image, as: 'images' },
                 { model: Category, as: 'category' },
-                { model: Tag, as: 'tags' }  
+                { model: Tag, as: 'tags' },
+                { model: Color, as: 'colors' }  
             ],
             order: [
                 ['id', 'ASC'],
@@ -16,6 +17,7 @@ const renderPanel = async (req, res) => {
 
         const tags = await Tag.findAll({ order: [['name', 'ASC']] });
         const categories = await Category.findAll({ order: [['name', 'ASC']] });
+        const colors = await Color.findAll({order: [['name', 'ASC']] })
 
         // Преобразование результатов для использования в шаблоне
         const productData = products.map(product => ({
@@ -24,21 +26,25 @@ const renderPanel = async (req, res) => {
             name: product.name,
             short_description: product.short_description,
             long_description: product.long_description,
-            color: product.color,
             price: product.price,
             images: product.images.map(image => image.image_url),
-            tags: product.tags.map(tag => tag.id)
+            tags: product.tags.map(tag => tag.id),
+            colors: product.colors.map(color => color.id)
         }));
 
         const tagData = tags.map(tag => ({
             id: tag.id,
             name: tag.name
         }));
+        const colorData = colors.map(color => ({
+            id: color.id,
+            name: color.name
+        }));
         const categoryData = categories.map(category => ({
             id: category.id,
             name: category.name
         }));
-        res.status(200).render('product-panel', { products: productData, tags: tagData, categories: categoryData });
+        res.status(200).render('product-panel', { products: productData, tags: tagData, categories: categoryData, colors: colorData });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });

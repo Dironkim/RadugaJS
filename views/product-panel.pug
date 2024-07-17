@@ -28,7 +28,7 @@ block content
           label(for="name") Name:
           input(type="text", name="name", id="productName")
         .form-group
-          label(for="category_id") Category ID:
+          label(for="category_id") Category:
           select(name="category_id", id="productCategory")
             each category in categories
               option(value=category.id)= category.name
@@ -39,8 +39,12 @@ block content
           label(for="long_description") Long Description:
           textarea(name="long_description", id="productLongDescription")
         .form-group
-          label(for="color") Color:
-          input(type="text", name="color", id="productColor")
+          label(for="color") Colors:
+          .boxes
+            each color in colors
+              .checkbox
+                input(type="checkbox", name="colors", value=color.id, id=`color-${color.id}`)
+                label(for=`color-${color.id}`)= color.name
         .form-group
           label(for="price") Price:
           input(type="number", step="0.01", name="price", id="productPrice")
