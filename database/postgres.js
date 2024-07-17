@@ -1,5 +1,6 @@
 const {Sequelize} = require('sequelize')
-const db = new Sequelize('radugaDev','radugaDev','raduga2024',{
+const {dbUsername, dbPassword} = require('../static/credentials')
+const db = new Sequelize('radugaDev',dbUsername,dbPassword,{
 		host: 'localhost',
 		dialect:'postgres',
 		port: '8081',

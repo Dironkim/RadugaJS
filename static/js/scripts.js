@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
           document.querySelectorAll('input[name="tags"]').forEach(checkbox => {
             checkbox.checked = tagIds.includes(parseInt(checkbox.value));
           });
+          productCategory.value = product.category_id;
         });
     }
   }

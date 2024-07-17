@@ -15,6 +15,7 @@ const renderPanel = async (req, res) => {
         });
 
         const tags = await Tag.findAll({ order: [['name', 'ASC']] });
+        const categories = await Category.findAll({ order: [['name', 'ASC']] });
 
         // Преобразование результатов для использования в шаблоне
         const productData = products.map(product => ({
@@ -33,8 +34,11 @@ const renderPanel = async (req, res) => {
             id: tag.id,
             name: tag.name
         }));
-
-        res.status(200).render('product-panel', { products: productData, tags: tagData });
+        const categoryData = categories.map(category => ({
+            id: category.id,
+            name: category.name
+        }));
+        res.status(200).render('product-panel', { products: productData, tags: tagData, categories: categoryData });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });

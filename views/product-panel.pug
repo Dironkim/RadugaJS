@@ -29,7 +29,9 @@ block content
           input(type="text", name="name", id="productName")
         .form-group
           label(for="category_id") Category ID:
-          input(type="number", name="category_id", id="productCategory")
+          select(name="category_id", id="productCategory")
+            each category in categories
+              option(value=category.id)= category.name
         .form-group
           label(for="short_description") Short Description:
           input(type="text", name="short_description", id="productShortDescription")
