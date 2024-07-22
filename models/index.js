@@ -43,7 +43,7 @@ Product.belongsToMany(Color, { through: ProductColor, foreignKey: 'product_id' }
 Color.belongsToMany(Product, { through: ProductColor, foreignKey: 'color_id' })
 
 //force:true - пересоздает таблицы
-db.sync({force:true}).then(function () {
+db.sync({force:false}).then(function () {
     console.log("Database Configured");
 });
 

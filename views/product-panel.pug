@@ -15,7 +15,13 @@ block content
         tbody
           each product in products
             tr(data-id=product.id)
-              td: img(src=product.images[0], width="100")
+              td
+                .image-carousel
+                  button.carousel-control-prev(type="button", onclick=`prevImage(${product.id})`) &lt;
+                  .carousel-inner(id=`carousel-${product.id}`)
+                    each image, index in product.images
+                      img(src=image, class=(index === 0 ? 'active' : ''), width="100")
+                  button.carousel-control-next(type="button", onclick=`nextImage(${product.id})`) &gt;
               td= product.name
               td
                 button(onclick=`showForm('edit', ${product.id})`) Edit
@@ -25,34 +31,38 @@ block content
       form(id="productForm", enctype="multipart/form-data")
         input(type="hidden", name="id", id="productId")
         .form-group
-          label(for="name") Name:
+          label(for="productName") Name:
           input(type="text", name="name", id="productName")
         .form-group
-          label(for="category_id") Category:
+          label(for="productCategory") Category:
           select(name="category_id", id="productCategory")
             each category in categories
               option(value=category.id)= category.name
         .form-group
-          label(for="short_description") Short Description:
+          label(for="productShortDescription") Short Description:
           input(type="text", name="short_description", id="productShortDescription")
         .form-group
-          label(for="long_description") Long Description:
+          label(for="productLongDescription") Long Description:
           textarea(name="long_description", id="productLongDescription")
         .form-group
-          label(for="color") Colors:
+          label Colors:
           .boxes
             each color in colors
               .checkbox
                 input(type="checkbox", name="colors", value=color.id, id=`color-${color.id}`)
                 label(for=`color-${color.id}`)= color.name
         .form-group
-          label(for="price") Price:
+          label(for="productPrice") Price:
           input(type="number", step="0.01", name="price", id="productPrice")
         .form-group
-          label(for="images") Images:
-          input(type="file", name="images", id="productImages", multiple)
+          label(for="newImages") Images:
+          input(type="file", name="images", id="newImages", multiple, onchange="addNewImages()")
         .form-group
-          label(for="tags") Tags:
+          .image-preview-container
+            label Images:
+            .image-preview-row
+        .form-group
+          label Tags:
           .boxes
             each tag in tags
               .checkbox

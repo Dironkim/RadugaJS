@@ -1,4 +1,5 @@
 const {Product, Image, Tag, Color} = require('../models/index')
+const url = require('url')
 
 // Методы обработки запросов: взаимодействие с базой данных через модели
 
@@ -64,15 +65,27 @@ const createProduct = async (req, res) => {
             );
             await Promise.all(imagePromises);
         }
+        
+
         // сохранение выбранных тегов (создание моделей ProductTag)
-        if (tags && tags.length > 0) {
-            const tagIds = tags.map(tag => parseInt(tag));
+        if (tags) {
+            let tagIds
+            if (typeof tags === 'string') 
+                tagIds = parseInt(tags) 
+            else
+                tagIds = tags.map(tag => parseInt(tag));
             await product.setTags(tagIds);
+            
         }
         // сохранение выбранных цветов (создание моделей ProductColor)
-        if (colors && colors.length > 0) {
-            const colorIds = colors.map(color => parseInt(color));
-            await product.setColors(colorIds);
+        if (colors) {
+            let colorIds
+            if (typeof colors === 'string') 
+                colorIds = parseInt(colors) 
+            else
+                colorIds = colors.map(color => parseInt(color));
+            await product.setTags(colorIds);
+            
         }
 
         res.status(201).json(product);
@@ -86,7 +99,7 @@ const updateProduct = async (req, res) => {
     // узнаем, какой товар выбран
     const { id } = req.params;
     // получение данных из тела запроса
-    const { category_id, name, short_description, long_description, price, tags, colors } = req.body;
+    const { category_id, name, short_description, long_description, price, tags, colors, existing_images } = req.body;
     // проверка
     console.log('Received body:', req.body);
     console.log('Received files:', req.files);
@@ -106,6 +119,24 @@ const updateProduct = async (req, res) => {
         });
         // удаляем привязанные к товару изображения
         await Image.destroy({ where: { product_id: id } });
+        // если у товара есть привязанные изображения
+        if (existing_images) {
+            // если изображение одно
+            if (typeof existing_images === 'string') {
+                // пересохраняем его под тем же url
+                Image.create({product_id: product.id, image_url: new URL(existing_images).pathname})
+            }
+            // изображений несколько
+            else {
+                // пересохраняем все с теми же url
+                const oldImagePromises = existing_images.map(oldUrl =>
+                    Image.create({ product_id: product.id, image_url: new URL(oldUrl).pathname })
+                );
+                await Promise.all(oldImagePromises);
+            }
+
+        }
+
         // если прикреплены новые, добавляем их
         if (req.files) {
             const imagePromises = req.files.map(file =>
@@ -114,14 +145,24 @@ const updateProduct = async (req, res) => {
             await Promise.all(imagePromises);
         }
         // сохранение выбранных тегов (создание моделей ProductTag)
-        if (tags && tags.length > 0) {
-            const tagIds = tags.map(tag => parseInt(tag));
+        if (tags) {
+            let tagIds
+            if (typeof tags === 'string') 
+                tagIds = parseInt(tags) 
+            else
+                tagIds = tags.map(tag => parseInt(tag));
             await product.setTags(tagIds);
+            
         }
         // сохранение выбранных цветов (создание моделей ProductColor)
-        if (colors && colors.length > 0) {
-            const colorIds = colors.map(color => parseInt(color));
-            await product.setColors(colorIds);
+        if (colors) {
+            let colorIds
+            if (typeof colors === 'string') 
+                colorIds = parseInt(colors) 
+            else
+                colorIds = colors.map(color => parseInt(color));
+            await product.setTags(colorIds);
+            
         }
         // ответ на запрос - объект json
         res.json(product); 
