@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  h1 Tags Management
+  button(onclick="showForm('new')") New Tag
+
+  .container
+    .tag-list
+      table
+        thead
+          tr
+            th Name
+            th Actions
+        tbody
+          each tag in tags
+            tr(data-id=tag.id)
+              td= tag.name
+              td
+                button(onclick=`showForm('edit', ${tag.id})`) Edit
+                button(onclick=`deleteTag(${tag.id})`) Delete
+    .tag-form#tag-form(style="display:none")
+      h2#form-title New Tag
+      form(id="tagForm")
+        input(type="hidden", name="id", id="tagId")
+        .form-group
+          label(for="tagName") Name:
+          input(type="text", name="name", id="tagName")
+        button(type="submit") Save
+      button(onclick="hideForm()") Cancel
+
+  script(src="/js/tag-panel.js")
